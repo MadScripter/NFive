@@ -38,7 +38,7 @@ namespace NFive.Server.Configuration
 
 			public override string ToString()
 			{
-				return $"Host={this.Host};Port={this.Port};Database={this.Database};Username={this.User};Password={this.Password}";
+				return $"Host={this.Host};Database={this.Database};Username={this.User};Password={this.Password}";
 				//return $"Host={this.Host};Port={this.Port};Database={this.Database};User Id={this.User};Password={this.Password};CharSet={(this.Type == "mysql" ? this.Charset : "utf8")};SSL Mode=None;AllowPublicKeyRetrieval=true;Logging={this.Logging}";
 			}
 		}
