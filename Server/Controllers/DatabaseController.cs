@@ -26,9 +26,14 @@ namespace NFive.Server.Controllers
 			ServerConfiguration.DatabaseConnection = this.Configuration.Connection.ToString();
 			ServerConfiguration.AutomaticMigrations = this.Configuration.Migrations.Automatic;
 
+			this.Logger.Info(ServerConfiguration.DatabaseConnection);
+
 			// Enable SQL query logging
-			MySqlTrace.Switch.Level = SourceLevels.All;
-			MySqlTrace.Listeners.Add(new ConsoleTraceListener());
+			if (this.GetDatabaseType() == DatabaseType.MYSQL)
+			{
+				MySqlTrace.Switch.Level = SourceLevels.All;
+				MySqlTrace.Listeners.Add(new ConsoleTraceListener());
+			}
 
 			BootHistory lastBoot;
 
@@ -39,8 +44,9 @@ namespace NFive.Server.Controllers
 				{
 					this.Logger.Info($"No existing database found, creating new database \"{this.Configuration.Connection.Database}\"");
 				}
-
+				
 				var migrator = new DbMigrator(new Migrations.Configuration());
+
 				foreach (var migration in migrator.GetPendingMigrations())
 				{
 					this.Logger.Debug($"Running migration: {migration}");
@@ -85,6 +91,18 @@ namespace NFive.Server.Controllers
 				{
 					await Task.Delay(this.Configuration.BootHistory.UpdateFrequency);
 				}
+			}
+		}
+
+		private DatabaseType GetDatabaseType()
+		{
+			try
+			{
+				return (DatabaseType)Enum.Parse(typeof(DatabaseType), this.Configuration.Connection.Type.ToUpper());
+			}
+			catch (Exception e)
+			{
+				return DatabaseType.NONE;
 			}
 		}
 	}

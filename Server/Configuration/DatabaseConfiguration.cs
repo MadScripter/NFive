@@ -1,5 +1,10 @@
 using System;
+using System.Data.Common;
+using System.Data.Entity.Core.EntityClient;
+using System.Data.SqlClient;
+using System.Text;
 using NFive.SDK.Core.Controllers;
+using Npgsql;
 
 namespace NFive.Server.Configuration
 {
@@ -15,6 +20,8 @@ namespace NFive.Server.Configuration
 
 		public class DatabaseConnectionConfiguration
 		{
+			public string Type { get; set; } = "mysql";
+
 			public string Host { get; set; } = "localhost";
 
 			public int Port { get; set; } = 3306;
@@ -29,7 +36,11 @@ namespace NFive.Server.Configuration
 
 			public bool Logging { get; set; } = false;
 
-			public override string ToString() => $"Host={this.Host};Port={this.Port};Database={this.Database};User Id={this.User};Password={this.Password};CharSet={this.Charset};SSL Mode=None;AllowPublicKeyRetrieval=true;Logging={this.Logging}";
+			public override string ToString()
+			{
+				return $"Host={this.Host};Port={this.Port};Database={this.Database};Username={this.User};Password={this.Password}";
+				//return $"Host={this.Host};Port={this.Port};Database={this.Database};User Id={this.User};Password={this.Password};CharSet={(this.Type == "mysql" ? this.Charset : "utf8")};SSL Mode=None;AllowPublicKeyRetrieval=true;Logging={this.Logging}";
+			}
 		}
 
 		public class DatabaseMigrationsConfiguration
@@ -47,5 +58,12 @@ namespace NFive.Server.Configuration
 				set => this.updateFrequency = TimeSpan.FromSeconds(Math.Max(value.TotalSeconds, 10));
 			}
 		}
+	}
+
+	public enum DatabaseType
+	{
+		NONE = 0,
+		MYSQL,
+		POSTGRESQL,
 	}
 }

@@ -13,6 +13,8 @@ namespace NFive.Server.Storage
 
 		public DbSet<BootHistory> BootHistory { get; set; }
 
+		public string Schema { get; set; } = string.Empty;
+
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{
 			base.OnModelCreating(modelBuilder);
